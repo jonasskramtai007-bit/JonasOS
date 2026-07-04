@@ -1,26 +1,119 @@
 @import "tailwindcss";
 
+/*
+  JonasOS design tokens.
+  Neutrals run ink-0 (page background) → ink-4 (primary text).
+  Dark is the default theme; `.light` on <html> switches palettes.
+*/
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* neutrals */
+  --ink-0: oklch(0.205 0.01 268);
+  --ink-1: oklch(0.564 0.024 262);
+  --ink-2: oklch(0.709 0.017 254);
+  --ink-3: oklch(0.844 0.015 261);
+  --ink-4: oklch(0.961 0.006 264);
+
+  /* accent */
+  --accent: oklch(0.786 0.076 248);
+  --accent-soft: oklch(0.702 0.044 248);
+  --on-accent: oklch(0.166 0.013 249);
+
+  /* semantic */
+  --ok: oklch(0.786 0.11 155);
+  --warn: oklch(0.789 0.094 78);
+  --danger: oklch(0.73 0.113 26);
+
+  /* derived surfaces & lines */
+  --rail: oklch(0.205 0.01 268 / 0.78);
+  --surf-1: oklch(1 0 0 / 0.045);
+  --surf-2: oklch(1 0 0 / 0.032);
+  --surf-3: oklch(1 0 0 / 0.055);
+  --surf-4: oklch(1 0 0 / 0.062);
+  --line: color-mix(in oklab, var(--ink-4) 10%, transparent);
+  --line-soft: color-mix(in oklab, var(--ink-4) 8%, transparent);
+  --line-strong: color-mix(in oklab, var(--ink-4) 14%, transparent);
+  --wash: color-mix(in oklab, var(--ink-4) 7%, transparent);
+  --accent-dim: color-mix(in oklab, var(--accent) 11%, transparent);
+  --accent-line: color-mix(in oklab, var(--accent) 26%, transparent);
+}
+
+.light {
+  --ink-0: oklch(0.957 0.006 256);
+  --ink-1: oklch(0.631 0.025 261);
+  --ink-2: oklch(0.487 0.027 261);
+  --ink-3: oklch(0.374 0.026 262);
+  --ink-4: oklch(0.221 0.015 262);
+
+  --accent: oklch(0.537 0.132 254);
+  --accent-soft: oklch(0.533 0.06 248);
+  --on-accent: oklch(1 0 0);
+
+  --ok: oklch(0.548 0.12 155);
+  --warn: oklch(0.554 0.111 78);
+  --danger: oklch(0.521 0.16 29);
+
+  --rail: oklch(0.986 0.002 256 / 0.85);
+  --surf-1: oklch(1 0 0);
+  --surf-2: oklch(1 0 0 / 0.6);
+  --surf-3: oklch(1 0 0);
+  --surf-4: oklch(1 0 0);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-ink-0: var(--ink-0);
+  --color-ink-1: var(--ink-1);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-ink-4: var(--ink-4);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-on-accent: var(--on-accent);
+  --color-ok: var(--ok);
+  --color-warn: var(--warn);
+  --color-danger: var(--danger);
+  --font-sans: var(--font-hanken), system-ui, sans-serif;
+  --font-mono: var(--font-plex-mono), monospace;
+  --font-serif: var(--font-newsreader), serif;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--ink-0);
+  color: var(--ink-4);
+  font-family: var(--font-sans);
+  font-weight: 400;
+}
+
+::selection {
+  background: color-mix(in oklab, var(--accent) 24%, transparent);
+}
+
+::-webkit-scrollbar {
+  width: 9px;
+  height: 9px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: color-mix(in oklab, var(--ink-4) 12%, transparent);
+  border-radius: 6px;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--ink-1);
+}
+
+textarea {
+  resize: none;
+}
+
+@keyframes livepulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.2;
+  }
 }
