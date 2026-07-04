@@ -1,36 +1,29 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# JonasOS
 
-## Getting Started
+Personal dashboard — foundation build. Next.js 15 (App Router, TypeScript strict), Tailwind CSS 4, Supabase, single-password auth.
 
-First, run the development server:
+## Stack
+
+- **UI** — components under `components/dashboard/`: a shared `Panel` wrapper, `TopRail` (6 tabs + theme toggle + clock), `Shell` layout, one component per card. Placeholder data only (`lib/placeholder-data.ts`); no data fetching yet.
+- **Theme** — dark by default, light via the toggle in the top rail (persisted in `localStorage`). Colour tokens live in `app/globals.css` as oklch values: `ink-0`…`ink-4` neutrals, one `accent`, semantic `ok` / `warn` / `danger`.
+- **Database** — Supabase project `khjafjvfpcuhwyljnbzf`. Schema in `supabase/migrations/`. RLS is enabled on every table with no policies (deny-all); all access goes through the service role via `lib/supabase/server.ts`.
+- **Auth** — single password, HMAC-signed cookie (`lib/auth.ts`). `middleware.ts` gates every route except `/login` and `/api/auth/*`. API routes also accept an `x-api-secret` header equal to `AUTH_SECRET`.
+
+## Setup
 
 ```bash
+cp .env.example .env.local   # then fill in the values
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+| Variable | Purpose |
+| --- | --- |
+| `AUTH_SECRET` | Signs session cookies; also the accepted `x-api-secret` value. `openssl rand -hex 32` |
+| `DASHBOARD_PASSWORD` | The password for `/login` |
+| `SUPABASE_URL` | `https://khjafjvfpcuhwyljnbzf.supabase.co` |
+| `SUPABASE_SERVICE_ROLE_KEY` | Service role key (server-only — bypasses RLS) |
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Tables
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+`raw_captures` (capture inbox) · `tasks` · `notes` · `daily_logs` (one row per day; `notes` jsonb holds habits/finance/goals state) · `weekly_reviews` · `audit_log`
