@@ -1,6 +1,10 @@
 # JonasOS
 
-Personal dashboard. Next.js 15 (App Router, TypeScript strict), Tailwind CSS 4, Supabase, single-password auth. Tasks, journal, goals, habits, finance snapshots and weekly reviews are wired to the database; AI capture routing comes later (captures are saved raw to `raw_captures`).
+Personal dashboard. Next.js 15 (App Router, TypeScript strict), Tailwind CSS 4, Supabase, single-password auth. Tasks, journal, goals, habits, finance snapshots and weekly reviews are wired to the database, and the capture box auto-files thoughts with AI.
+
+## Capture pipeline
+
+`POST /api/capture` saves the raw text to `raw_captures` first (nothing is ever lost), then classifies it with Claude Haiku 4.5 (`lib/classify.ts`, structured outputs) and auto-files it as a **task**, **note**, **journal** entry (appended to today's log), or **goal**. The raw row records the classification and where it was routed. Without `ANTHROPIC_API_KEY` — or if classification fails — the capture stays in the inbox with `routed_to` null.
 
 ## Stack
 
@@ -23,10 +27,11 @@ npm run dev
 | `DASHBOARD_PASSWORD` | The password for `/login` |
 | `SUPABASE_URL` | `https://khjafjvfpcuhwyljnbzf.supabase.co` |
 | `SUPABASE_SERVICE_ROLE_KEY` | Service role key (server-only — bypasses RLS) |
+| `ANTHROPIC_API_KEY` | Optional — enables AI capture classification |
 
 ### Developing without Supabase credentials
 
-`node scripts/supabase-stub.mjs` starts an in-memory PostgREST stand-in on port 54321; point the app at it with `SUPABASE_URL=http://localhost:54321 SUPABASE_SERVICE_ROLE_KEY=stub`. Data is lost on restart — dev only.
+`node scripts/supabase-stub.mjs` starts an in-memory PostgREST stand-in on port 54321; point the app at it with `SUPABASE_URL=http://localhost:54321 SUPABASE_SERVICE_ROLE_KEY=stub`. Similarly, `node scripts/anthropic-stub.mjs` fakes the Claude Messages API on port 54322 (keyword classifier); use `ANTHROPIC_API_KEY=stub ANTHROPIC_BASE_URL=http://localhost:54322`. Data is lost on restart — dev only.
 
 ## Tables
 

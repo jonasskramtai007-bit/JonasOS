@@ -19,7 +19,7 @@ export function SessionCard({
   const router = useRouter();
   const [will, setWill] = useState(todayWill);
   const [capture, setCapture] = useState("");
-  const [filedAt, setFiledAt] = useState<string | null>(null);
+  const [filed, setFiled] = useState<{ route: string; at: string } | null>(null);
   const [busy, setBusy] = useState(false);
 
   async function saveWill() {
@@ -33,9 +33,17 @@ export function SessionCard({
     if (!text || busy) return;
     setBusy(true);
     try {
-      await api("/api/capture", "POST", { text });
+      const result = await api<{ routed_to: string | null }>(
+        "/api/capture",
+        "POST",
+        { text },
+      );
       setCapture("");
-      setFiledAt(new Date().toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" }));
+      setFiled({
+        route: (result.routed_to ?? "inbox").toUpperCase(),
+        at: new Date().toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" }),
+      });
+      router.refresh();
     } finally {
       setBusy(false);
     }
@@ -66,7 +74,7 @@ export function SessionCard({
           value={capture}
           onChange={(e) => setCapture(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && doCapture()}
-          placeholder="Capture a thought — filed to the inbox…"
+          placeholder="Capture a thought — AI will file it…"
           className="flex-1 rounded-[9px] border border-(--line-strong) bg-(--surf-3) px-[13px] py-[11px] text-[13px] text-ink-4 outline-none focus:border-(--accent-line)"
         />
         <button
@@ -74,17 +82,23 @@ export function SessionCard({
           disabled={busy}
           className="cursor-pointer rounded-[9px] bg-accent px-5 font-mono text-[10.5px] font-semibold tracking-[1.5px] text-on-accent disabled:opacity-50"
         >
-          CAPTURE
+          {busy ? "FILING…" : "CAPTURE"}
         </button>
       </div>
       <div className="flex items-center gap-[9px] font-mono text-[9.5px] tracking-[1px]">
         <span className="text-ink-1">FILED →</span>
-        {filedAt ? (
-          <Pill tone="accent">INBOX · {filedAt}</Pill>
+        {filed ? (
+          <Pill tone="accent">
+            {filed.route} · {filed.at}
+          </Pill>
         ) : (
-          <Pill tone="muted">INBOX</Pill>
+          <>
+            <Pill tone="muted">TASK</Pill>
+            <Pill tone="muted">NOTE</Pill>
+            <Pill tone="muted">JOURNAL</Pill>
+            <Pill tone="muted">GOAL</Pill>
+          </>
         )}
-        <span className="text-ink-1">AI ROUTING COMES LATER</span>
       </div>
     </Panel>
   );
