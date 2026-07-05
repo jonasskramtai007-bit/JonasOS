@@ -1,5 +1,9 @@
 import { GoalsView } from "@/components/dashboard/GoalsView";
+import { listGoals } from "@/lib/db";
 
-export default function GoalsPage() {
-  return <GoalsView />;
+export const dynamic = "force-dynamic";
+
+export default async function GoalsPage() {
+  const goals = await listGoals();
+  return <GoalsView goals={goals} />;
 }

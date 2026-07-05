@@ -13,7 +13,15 @@ AUTH_SECRET=testsecret123 DASHBOARD_PASSWORD=hunter2 PORT=3100 npm run start
 ```
 
 Auth env vars are required — middleware returns 500 without AUTH_SECRET.
-Supabase env vars are NOT needed to boot (no data fetching wired yet).
+Pages fetch from Supabase; without real credentials run the stub first:
+
+```bash
+node scripts/supabase-stub.mjs &   # in-memory PostgREST on :54321
+SUPABASE_URL=http://localhost:54321 SUPABASE_SERVICE_ROLE_KEY=stub \
+  AUTH_SECRET=testsecret123 DASHBOARD_PASSWORD=hunter2 PORT=3100 npm run start
+```
+
+Inspect stub state directly: `curl http://localhost:54321/rest/v1/<table>?select=*`.
 
 ## Flows worth driving
 
@@ -22,6 +30,13 @@ Supabase env vars are NOT needed to boot (no data fetching wired yet).
 - Any `/api/*` route accepts header `x-api-secret: $AUTH_SECRET` in place of the cookie.
 - With the cookie: `/`, `/tasks`, `/journal`, `/goals`, `/finance`, `/review` all 200.
 - `POST /api/auth/logout` clears the cookie.
+- Mutations: POST `/api/tasks` + PATCH/DELETE `/api/tasks/[id]`, POST `/api/capture`,
+  PUT `/api/day` (journal/habits/today_will upsert), POST `/api/goals` +
+  PATCH/DELETE `/api/goals/[id]`, PUT `/api/finance` (monthly upsert),
+  PUT `/api/review` (409 once sealed). Each writes an `audit_log` row.
+- UI flows: habit buttons on Home (ring updates, persists across reload),
+  + NEW form on Tasks, SAVE ENTRY on Journal, add-goal inputs (Enter),
+  ADD SNAPSHOT form on Finance, SEAL WEEK on Review (locks textareas).
 
 ## Browser
 
