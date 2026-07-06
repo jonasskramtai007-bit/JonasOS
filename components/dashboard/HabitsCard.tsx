@@ -52,7 +52,7 @@ export function HabitsCard({ done }: { done: string[] }) {
               <button
                 key={habit}
                 onClick={() => toggle(habit)}
-                className={`cursor-pointer rounded-[9px] border py-[10px] text-center font-mono text-[10px] tracking-[1.2px] ${
+                className={`cursor-pointer rounded-[7px] border py-[10px] text-center font-mono text-[10px] tracking-[1.2px] ${
                   isDone
                     ? "border-(--accent-line) bg-(--accent-dim) text-accent"
                     : "border-(--line) text-ink-2"

@@ -70,7 +70,7 @@ export function InboxView({
         </p>
       )}
 
-      <div className="mb-[26px] rounded-[14px] border border-(--line) bg-(--surf-1) p-[22px]">
+      <div className="mb-[26px] rounded-[10px] border border-(--line) bg-(--surf-1) p-[22px]">
         <div className="mb-4 font-mono text-[10px] tracking-[1.5px] text-ink-1">
           PENDING · NOT YET FILED
         </div>
@@ -117,7 +117,7 @@ export function InboxView({
         )}
       </div>
 
-      <div className="rounded-[14px] border border-(--line-soft) bg-(--surf-2) p-[22px]">
+      <div className="rounded-[10px] border border-(--line-soft) bg-(--surf-2) p-[22px]">
         <div className="mb-4 font-mono text-[10px] tracking-[1.5px] text-ink-1">
           RECENTLY FILED
         </div>

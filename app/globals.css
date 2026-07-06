@@ -1,62 +1,77 @@
 @import "tailwindcss";
 
 /*
-  JonasOS design tokens.
-  Neutrals run ink-0 (page background) → ink-4 (primary text).
+  JonasOS design tokens — warm premium palette.
+  Neutrals run ink-0 (page background) → ink-4 (primary text), all
+  warm-tinted (hue 60–85), never cold blue-black.
+  Surfaces step through three elevations: recessed (surf-2) →
+  card (surf-1) → raised (surf-3 inputs / surf-4 cards-on-cards).
   Dark is the default theme; `.light` on <html> switches palettes.
 */
 :root {
   /* neutrals */
-  --ink-0: oklch(0.205 0.01 268);
-  --ink-1: oklch(0.564 0.024 262);
-  --ink-2: oklch(0.709 0.017 254);
-  --ink-3: oklch(0.844 0.015 261);
-  --ink-4: oklch(0.961 0.006 264);
+  --ink-0: oklch(0.145 0.01 60);
+  --ink-1: oklch(0.52 0.018 70);
+  --ink-2: oklch(0.66 0.02 75);
+  --ink-3: oklch(0.81 0.018 80);
+  --ink-4: oklch(0.965 0.01 85);
 
-  /* accent */
-  --accent: oklch(0.786 0.076 248);
-  --accent-soft: oklch(0.702 0.044 248);
-  --on-accent: oklch(0.166 0.013 249);
+  /* accent — deep amber-gold, used sparingly */
+  --accent: oklch(0.75 0.15 80);
+  --accent-soft: oklch(0.63 0.09 78);
+  --on-accent: oklch(0.18 0.03 80);
 
-  /* semantic */
-  --ok: oklch(0.786 0.11 155);
-  --warn: oklch(0.789 0.094 78);
-  --danger: oklch(0.73 0.113 26);
+  /* semantic — desaturated */
+  --ok: oklch(0.68 0.07 150);
+  --warn: oklch(0.72 0.12 60);
+  --danger: oklch(0.62 0.11 30);
 
-  /* derived surfaces & lines */
-  --rail: oklch(0.205 0.01 268 / 0.78);
-  --surf-1: oklch(1 0 0 / 0.045);
-  --surf-2: oklch(1 0 0 / 0.032);
-  --surf-3: oklch(1 0 0 / 0.055);
-  --surf-4: oklch(1 0 0 / 0.062);
-  --line: color-mix(in oklab, var(--ink-4) 10%, transparent);
-  --line-soft: color-mix(in oklab, var(--ink-4) 8%, transparent);
-  --line-strong: color-mix(in oklab, var(--ink-4) 14%, transparent);
-  --wash: color-mix(in oklab, var(--ink-4) 7%, transparent);
-  --accent-dim: color-mix(in oklab, var(--accent) 11%, transparent);
-  --accent-line: color-mix(in oklab, var(--accent) 26%, transparent);
+  /* elevation: bg → recessed → card → input → raised */
+  --rail: oklch(0.145 0.01 60 / 0.8);
+  --surf-2: oklch(0.17 0.01 62);
+  --surf-1: oklch(0.185 0.011 64);
+  --surf-3: oklch(0.21 0.012 66);
+  --surf-4: oklch(0.225 0.012 66);
+
+  /* hairlines — low-opacity warm gray */
+  --line: oklch(0.85 0.02 80 / 0.1);
+  --line-soft: oklch(0.85 0.02 80 / 0.07);
+  --line-strong: oklch(0.85 0.02 80 / 0.16);
+  --wash: oklch(0.85 0.02 80 / 0.06);
+  --accent-dim: color-mix(in oklab, var(--accent) 10%, transparent);
+  --accent-line: color-mix(in oklab, var(--accent) 28%, transparent);
+
+  /* card top-edge highlight */
+  --sheen: oklch(1 0 0 / 0.045);
 }
 
 .light {
-  --ink-0: oklch(0.957 0.006 256);
-  --ink-1: oklch(0.631 0.025 261);
-  --ink-2: oklch(0.487 0.027 261);
-  --ink-3: oklch(0.374 0.026 262);
-  --ink-4: oklch(0.221 0.015 262);
+  --ink-0: oklch(0.955 0.008 85);
+  --ink-1: oklch(0.6 0.02 70);
+  --ink-2: oklch(0.48 0.022 65);
+  --ink-3: oklch(0.36 0.02 60);
+  --ink-4: oklch(0.22 0.015 60);
 
-  --accent: oklch(0.537 0.132 254);
-  --accent-soft: oklch(0.533 0.06 248);
-  --on-accent: oklch(1 0 0);
+  --accent: oklch(0.58 0.13 75);
+  --accent-soft: oklch(0.55 0.07 75);
+  --on-accent: oklch(0.99 0.005 85);
 
-  --ok: oklch(0.548 0.12 155);
-  --warn: oklch(0.554 0.111 78);
-  --danger: oklch(0.521 0.16 29);
+  --ok: oklch(0.52 0.09 150);
+  --warn: oklch(0.55 0.12 65);
+  --danger: oklch(0.5 0.13 30);
 
-  --rail: oklch(0.986 0.002 256 / 0.85);
-  --surf-1: oklch(1 0 0);
-  --surf-2: oklch(1 0 0 / 0.6);
-  --surf-3: oklch(1 0 0);
-  --surf-4: oklch(1 0 0);
+  --rail: oklch(0.975 0.006 85 / 0.85);
+  --surf-2: oklch(0.975 0.006 85 / 0.6);
+  --surf-1: oklch(0.985 0.005 85);
+  --surf-3: oklch(0.995 0.003 85);
+  --surf-4: oklch(0.995 0.003 85);
+
+  --line: oklch(0.35 0.02 65 / 0.12);
+  --line-soft: oklch(0.35 0.02 65 / 0.08);
+  --line-strong: oklch(0.35 0.02 65 / 0.18);
+  --wash: oklch(0.35 0.02 65 / 0.06);
+
+  --sheen: oklch(1 0 0 / 0.7);
 }
 
 @theme inline {
@@ -81,6 +96,16 @@ body {
   color: var(--ink-4);
   font-family: var(--font-sans);
   font-weight: 400;
+}
+
+/* Card surface treatment: 1px top-edge highlight suggesting depth. */
+:where([class*="bg-(--surf-1)"], [class*="bg-(--surf-2)"], [class*="bg-(--surf-4)"]) {
+  box-shadow: inset 0 1px 0 0 var(--sheen);
+}
+
+/* Tighter tracking on monospace numbers (unless explicitly set). */
+.tabular-nums:not([class*="tracking-"]) {
+  letter-spacing: -0.015em;
 }
 
 ::selection {

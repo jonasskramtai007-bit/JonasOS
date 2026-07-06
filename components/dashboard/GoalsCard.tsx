@@ -83,7 +83,7 @@ export function GoalsCard({ goals }: { goals: Goal[] }) {
         onChange={(e) => setText(e.target.value)}
         onKeyDown={(e) => e.key === "Enter" && add()}
         placeholder="+ add weekly goal"
-        className="w-full rounded-[8px] border border-dashed border-(--line-strong) bg-transparent px-[11px] py-[9px] font-mono text-[11px] text-ink-3 outline-none focus:border-(--accent-line)"
+        className="w-full rounded-[7px] border border-dashed border-(--line-strong) bg-transparent px-[11px] py-[9px] font-mono text-[11px] text-ink-3 outline-none focus:border-(--accent-line)"
       />
     </Panel>
   );

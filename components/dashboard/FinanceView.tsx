@@ -12,7 +12,7 @@ function euro(n: number): string {
 
 function StatCard({ label, value, accent }: { label: string; value: string; accent?: boolean }) {
   return (
-    <div className="rounded-[14px] border border-(--line) bg-(--surf-1) p-5">
+    <div className="rounded-[10px] border border-(--line) bg-(--surf-1) p-5">
       <div className="mb-[10px] font-mono text-[9.5px] tracking-[1.4px] text-ink-1">
         {label}
       </div>
@@ -67,7 +67,7 @@ export function FinanceView({ snapshots }: { snapshots: FinanceSnapshot[] }) {
         <span className="text-ink-3">FINANCE</span>
       </div>
 
-      <div className="mb-[18px] rounded-[16px] border border-(--line) bg-(--surf-1) p-[34px]">
+      <div className="mb-[18px] rounded-[12px] border border-(--line) bg-(--surf-1) p-[34px]">
         <div className="mb-3 font-mono text-[10px] tracking-[1.6px] text-ink-1">
           TOTAL SAVINGS
         </div>
@@ -109,7 +109,7 @@ export function FinanceView({ snapshots }: { snapshots: FinanceSnapshot[] }) {
       </div>
 
       <div className="grid grid-cols-[1.5fr_1fr] items-start gap-[18px]">
-        <div className="rounded-[14px] border border-(--line-soft) bg-(--surf-2) p-[22px]">
+        <div className="rounded-[10px] border border-(--line-soft) bg-(--surf-2) p-[22px]">
           <div className="mb-4 font-mono text-[10px] tracking-[1.5px] text-ink-1">
             SNAPSHOT HISTORY
           </div>
@@ -147,7 +147,7 @@ export function FinanceView({ snapshots }: { snapshots: FinanceSnapshot[] }) {
           })}
         </div>
 
-        <div className="rounded-[14px] border border-(--line) bg-(--surf-1) p-[22px]">
+        <div className="rounded-[10px] border border-(--line) bg-(--surf-1) p-[22px]">
           <div className="mb-4 font-mono text-[10px] tracking-[1.5px] text-accent-soft">
             ADD SNAPSHOT
           </div>
@@ -158,7 +158,7 @@ export function FinanceView({ snapshots }: { snapshots: FinanceSnapshot[] }) {
             value={month}
             onChange={(e) => setMonth(e.target.value)}
             placeholder="2026-07"
-            className="mb-[14px] w-full rounded-[9px] border border-(--line-strong) bg-(--surf-3) px-3 py-[10px] font-mono text-[12px] text-ink-4 outline-none focus:border-(--accent-line)"
+            className="mb-[14px] w-full rounded-[7px] border border-(--line-strong) bg-(--surf-3) px-3 py-[10px] font-mono text-[12px] text-ink-4 outline-none focus:border-(--accent-line)"
           />
           <div className="grid grid-cols-3 gap-[10px]">
             <div>
@@ -169,7 +169,7 @@ export function FinanceView({ snapshots }: { snapshots: FinanceSnapshot[] }) {
                 value={total}
                 onChange={(e) => setTotal(e.target.value)}
                 placeholder="2600"
-                className="w-full rounded-[9px] border border-(--line-strong) bg-(--surf-3) px-3 py-[10px] font-mono text-[12px] text-ink-4 outline-none focus:border-(--accent-line)"
+                className="w-full rounded-[7px] border border-(--line-strong) bg-(--surf-3) px-3 py-[10px] font-mono text-[12px] text-ink-4 outline-none focus:border-(--accent-line)"
               />
             </div>
             <div>
@@ -180,7 +180,7 @@ export function FinanceView({ snapshots }: { snapshots: FinanceSnapshot[] }) {
                 value={income}
                 onChange={(e) => setIncome(e.target.value)}
                 placeholder="1200"
-                className="w-full rounded-[9px] border border-(--line-strong) bg-(--surf-3) px-3 py-[10px] font-mono text-[12px] text-ink-4 outline-none focus:border-(--accent-line)"
+                className="w-full rounded-[7px] border border-(--line-strong) bg-(--surf-3) px-3 py-[10px] font-mono text-[12px] text-ink-4 outline-none focus:border-(--accent-line)"
               />
             </div>
             <div>
@@ -191,7 +191,7 @@ export function FinanceView({ snapshots }: { snapshots: FinanceSnapshot[] }) {
                 value={spend}
                 onChange={(e) => setSpend(e.target.value)}
                 placeholder="950"
-                className="w-full rounded-[9px] border border-(--line-strong) bg-(--surf-3) px-3 py-[10px] font-mono text-[12px] text-ink-4 outline-none focus:border-(--accent-line)"
+                className="w-full rounded-[7px] border border-(--line-strong) bg-(--surf-3) px-3 py-[10px] font-mono text-[12px] text-ink-4 outline-none focus:border-(--accent-line)"
               />
             </div>
           </div>
@@ -203,7 +203,7 @@ export function FinanceView({ snapshots }: { snapshots: FinanceSnapshot[] }) {
           <button
             onClick={addSnapshot}
             disabled={busy || !month.trim() || !total.trim()}
-            className="mt-[18px] w-full cursor-pointer rounded-[9px] bg-accent py-[11px] font-mono text-[10.5px] font-semibold tracking-[1.5px] text-on-accent disabled:opacity-50"
+            className="mt-[18px] w-full cursor-pointer rounded-[7px] bg-accent py-[11px] font-mono text-[10.5px] font-semibold tracking-[1.5px] text-on-accent disabled:opacity-50"
           >
             SAVE SNAPSHOT
           </button>

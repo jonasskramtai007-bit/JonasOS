@@ -75,12 +75,12 @@ export function SessionCard({
           onChange={(e) => setCapture(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && doCapture()}
           placeholder="Capture a thought — AI will file it…"
-          className="flex-1 rounded-[9px] border border-(--line-strong) bg-(--surf-3) px-[13px] py-[11px] text-[13px] text-ink-4 outline-none focus:border-(--accent-line)"
+          className="flex-1 rounded-[7px] border border-(--line-strong) bg-(--surf-3) px-[13px] py-[11px] text-[13px] text-ink-4 outline-none focus:border-(--accent-line)"
         />
         <button
           onClick={doCapture}
           disabled={busy}
-          className="cursor-pointer rounded-[9px] bg-accent px-5 font-mono text-[10.5px] font-semibold tracking-[1.5px] text-on-accent disabled:opacity-50"
+          className="cursor-pointer rounded-[7px] bg-accent px-5 font-mono text-[10.5px] font-semibold tracking-[1.5px] text-on-accent disabled:opacity-50"
         >
           {busy ? "FILING…" : "CAPTURE"}
         </button>

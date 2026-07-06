@@ -85,7 +85,7 @@ export function ReviewView({
         <button
           onClick={sealWeek}
           disabled={sealed}
-          className="cursor-pointer rounded-[9px] bg-accent px-[18px] py-[10px] font-mono text-[10.5px] font-semibold tracking-[1.5px] text-on-accent disabled:opacity-40"
+          className="cursor-pointer rounded-[7px] bg-accent px-[18px] py-[10px] font-mono text-[10.5px] font-semibold tracking-[1.5px] text-on-accent disabled:opacity-40"
         >
           {sealed ? "WEEK SEALED" : "SEAL WEEK"}
         </button>
@@ -95,7 +95,7 @@ export function ReviewView({
         {SECTIONS.map((section) => (
           <div
             key={section.field}
-            className={`rounded-[14px] border bg-(--surf-1) p-5 ${
+            className={`rounded-[10px] border bg-(--surf-1) p-5 ${
               section.highlight ? "border-(--accent-line)" : "border-(--line)"
             }`}
           >
