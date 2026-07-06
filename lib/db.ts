@@ -3,6 +3,7 @@
 import { createServiceClient } from "./supabase/server";
 import { USER_ID } from "./config";
 import { localDateISO, yesterdayISO, weekStartISO } from "./dates";
+import { habitStats } from "./habits";
 import type {
   DailyLog,
   FinanceSnapshot,
@@ -124,12 +125,47 @@ export async function getWeeklyReview(
 ): Promise<WeeklyReview | null> {
   const { data, error } = await db()
     .from("weekly_reviews")
-    .select("id, week_start, wins, slipped, open_loops, next_week_top3, sealed")
+    .select(
+      "id, week_start, wins, slipped, open_loops, next_week_top3, identity_sentence, sealed",
+    )
     .eq("user_id", USER_ID)
     .eq("week_start", weekStart)
     .maybeSingle();
   throwIf(error);
   return data as WeeklyReview | null;
+}
+
+/** Tasks completed within [startDate, endDate] (inclusive, local dates). */
+export async function listCompletedTasksBetween(
+  startDate: string,
+  endDate: string,
+): Promise<Task[]> {
+  const { data, error } = await db()
+    .from("tasks")
+    .select("*")
+    .eq("user_id", USER_ID)
+    .gte("completed_at", `${startDate}T00:00:00`)
+    .lte("completed_at", `${endDate}T23:59:59`)
+    .order("completed_at", { ascending: true })
+    .limit(100);
+  throwIf(error);
+  return (data ?? []) as Task[];
+}
+
+export async function listLogsBetween(
+  startDate: string,
+  endDate: string,
+): Promise<DailyLog[]> {
+  const { data, error } = await db()
+    .from("daily_logs")
+    .select("id, log_date, notes, mood")
+    .eq("user_id", USER_ID)
+    .gte("log_date", startDate)
+    .lte("log_date", endDate)
+    .order("log_date", { ascending: true })
+    .limit(40);
+  throwIf(error);
+  return (data ?? []) as DailyLog[];
 }
 
 /** Consecutive days ending today/yesterday with at least one habit done. */
@@ -172,5 +208,6 @@ export async function getHomeData() {
     yesterdayLog,
     snapshots,
     streak: computeStreak(recentLogs),
+    habitStats: habitStats(recentLogs, today),
   };
 }

@@ -5,7 +5,7 @@
 export const USER_ID = "00000000-0000-0000-0000-000000000001";
 
 /** Timezone used to decide what "today" and "this week" mean. */
-export const TIMEZONE = "Europe/Vilnius";
+export const TIMEZONE = process.env.USER_TIMEZONE || "Europe/Vilnius";
 
 export const PROFILE = {
   name: "Jonas",

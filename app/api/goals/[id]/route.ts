@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/server";
 import { USER_ID } from "@/lib/config";
 import { audit } from "@/lib/audit";
+import { listRecentLogs } from "@/lib/db";
+import { consistencyRate } from "@/lib/habits";
 
 type Params = { params: Promise<{ id: string }> };
 
@@ -14,6 +16,14 @@ export async function PATCH(request: NextRequest, { params }: Params) {
   if (typeof body?.done === "boolean") {
     patch.done = body.done;
     patch.completed_at = body.done ? new Date().toISOString() : null;
+    // data collection for future monthly analysis: snapshot the
+    // rolling 7-day habit consistency alongside the completion
+    if (body.done) {
+      const logs = await listRecentLogs(10);
+      patch.completion_consistency = Number(consistencyRate(logs, 7).toFixed(3));
+    } else {
+      patch.completion_consistency = null;
+    }
   }
   if (Object.keys(patch).length === 0) {
     return NextResponse.json({ error: "nothing to update" }, { status: 400 });

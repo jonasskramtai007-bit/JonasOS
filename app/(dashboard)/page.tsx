@@ -36,7 +36,7 @@ export default async function HomePage() {
   return (
     <div className="grid grid-cols-[300px_1fr_322px] items-start gap-[18px]">
       <div className="flex flex-col gap-[18px]">
-        <OperatorCard streak={data.streak} />
+        <OperatorCard streak={data.streak} rate7={data.habitStats.rate7} />
         <FinancePulseCard snapshots={data.snapshots} />
       </div>
       <div className="flex flex-col gap-[18px]">
@@ -46,7 +46,10 @@ export default async function HomePage() {
           todayWill={data.todayLog?.notes?.today_will ?? ""}
         />
         <TodayCard tasks={data.todayTasks} />
-        <HabitsCard done={data.todayLog?.notes?.habits ?? []} />
+        <HabitsCard
+          done={data.todayLog?.notes?.habits ?? []}
+          stats={data.habitStats}
+        />
       </div>
       <div className="flex flex-col gap-[18px]">
         <GoalsCard goals={data.goals.filter((g) => !g.done).concat(data.goals.filter((g) => g.done)).slice(0, 12)} />
