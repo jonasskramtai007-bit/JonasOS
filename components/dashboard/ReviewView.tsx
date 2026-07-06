@@ -31,17 +31,21 @@ export function ReviewView({
     next_week_top3: review?.next_week_top3 ?? "",
   });
   const [sealed, setSealed] = useState(review?.sealed ?? false);
+  const [identity, setIdentity] = useState(review?.identity_sentence ?? null);
   const [status, setStatus] = useState<"idle" | "saving" | "saved">("idle");
 
   async function save(extra?: { sealed: boolean }) {
     setStatus("saving");
     try {
-      await api("/api/review", "PUT", {
+      const result = await api<{ review: WeeklyReview }>("/api/review", "PUT", {
         week_start: weekStart,
         ...values,
         ...extra,
       });
-      if (extra?.sealed) setSealed(true);
+      if (extra?.sealed) {
+        setSealed(true);
+        setIdentity(result.review?.identity_sentence ?? null);
+      }
       setStatus("saved");
       router.refresh();
     } catch {
@@ -90,6 +94,17 @@ export function ReviewView({
           {sealed ? "WEEK SEALED" : "SEAL WEEK"}
         </button>
       </div>
+
+      {sealed && identity && (
+        <div className="mb-6 rounded-[10px] border border-(--accent-line) bg-(--surf-1) p-5">
+          <div className="mb-2 font-mono text-[9.5px] tracking-[1.5px] text-accent-soft">
+            WHO YOU WERE THIS WEEK
+          </div>
+          <p className="font-serif text-[19px] italic leading-[1.55] text-ink-4">
+            {identity}
+          </p>
+        </div>
+      )}
 
       <div className="grid grid-cols-2 gap-[18px]">
         {SECTIONS.map((section) => (

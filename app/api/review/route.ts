@@ -3,6 +3,7 @@ import { createServiceClient } from "@/lib/supabase/server";
 import { USER_ID } from "@/lib/config";
 import { weekStartISO } from "@/lib/dates";
 import { audit } from "@/lib/audit";
+import { generateIdentitySentence } from "@/lib/review-draft";
 
 const FIELDS = ["wins", "slipped", "open_loops", "next_week_top3"] as const;
 
@@ -48,8 +49,24 @@ export async function PUT(request: NextRequest) {
     .single();
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
-  await audit(db, row.sealed ? "review.seal" : "review.update", "weekly_review", data.id, {
+  // Identity sentence: generated exactly once, at the moment of sealing.
+  let review = data;
+  const justSealed = row.sealed === true && !existing?.sealed;
+  if (justSealed && !data.identity_sentence) {
+    const sentence = await generateIdentitySentence(weekStart);
+    if (sentence) {
+      const { data: withIdentity } = await db
+        .from("weekly_reviews")
+        .update({ identity_sentence: sentence })
+        .eq("id", data.id)
+        .select()
+        .single();
+      if (withIdentity) review = withIdentity;
+    }
+  }
+
+  await audit(db, row.sealed ? "review.seal" : "review.update", "weekly_review", review.id, {
     week_start: weekStart,
   });
-  return NextResponse.json({ review: data });
+  return NextResponse.json({ review });
 }

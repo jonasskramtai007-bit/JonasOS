@@ -27,6 +27,8 @@ function parseFilters(searchParams) {
     if (op === "eq") filters.push((row) => String(row[key]) === operand);
     else if (op === "is" && operand === "null") filters.push((row) => row[key] === null || row[key] === undefined);
     else if (op === "not" && operand === "is.null") filters.push((row) => row[key] !== null && row[key] !== undefined);
+    else if (op === "gte") filters.push((row) => String(row[key] ?? "") >= operand);
+    else if (op === "lte") filters.push((row) => String(row[key] ?? "") <= operand);
     else filters.push(() => false); // unsupported filter: match nothing loudly
   }
   return filters;

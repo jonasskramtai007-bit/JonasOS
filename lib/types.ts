@@ -23,6 +23,7 @@ export interface Goal {
   horizon: GoalHorizon;
   done: boolean;
   completed_at: string | null;
+  completion_consistency: number | null;
   created_at: string;
 }
 
@@ -31,6 +32,8 @@ export interface DayNotes {
   journal?: string;
   today_will?: string;
   habits?: string[];
+  /** set once the daily prompt email has gone out for this date */
+  prompt_sent?: boolean;
 }
 
 export interface DailyLog {
@@ -65,5 +68,6 @@ export interface WeeklyReview {
   slipped: string | null;
   open_loops: string | null;
   next_week_top3: string | null;
+  identity_sentence: string | null;
   sealed: boolean;
 }

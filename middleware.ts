@@ -34,6 +34,7 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  // Everything except /login, /api/auth/*, Next internals and static files.
-  matcher: ["/((?!login|api/auth/|_next/|favicon.ico|.*\\..*).*)"],
+  // Everything except /login, /api/auth/*, /api/cron/* (Bearer-authed
+  // inside the route), Next internals and static files.
+  matcher: ["/((?!login|api/auth/|api/cron/|_next/|favicon.ico|.*\\..*).*)"],
 };

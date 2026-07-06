@@ -5,10 +5,18 @@ import { useRouter } from "next/navigation";
 import { Panel } from "./Panel";
 import { api } from "@/lib/api-client";
 import { HABITS } from "@/lib/config";
+import { pct } from "@/lib/habits";
+import type { HabitStats } from "@/lib/habits";
 
 const RING_CIRCUMFERENCE = 188.5; // 2πr for r=30
 
-export function HabitsCard({ done }: { done: string[] }) {
+export function HabitsCard({
+  done,
+  stats,
+}: {
+  done: string[];
+  stats: HabitStats;
+}) {
   const router = useRouter();
   const [current, setCurrent] = useState<string[]>(done);
   const [busy, setBusy] = useState(false);
@@ -40,7 +48,8 @@ export function HabitsCard({ done }: { done: string[] }) {
       className="p-[22px]"
       right={
         <span className="font-mono text-[9.5px] tracking-[1px] text-ink-1">
-          RESETS 00:00
+          7D <span className="tabular-nums text-ink-3">{pct(stats.rate7)}</span>
+          <span className="mx-2 text-ink-1">·</span>RESETS 00:00
         </span>
       }
     >
@@ -87,6 +96,36 @@ export function HabitsCard({ done }: { done: string[] }) {
             </span>
           </div>
         </div>
+      </div>
+
+      {/* 30-day rolling consistency */}
+      <div className="mt-[18px] flex items-center gap-[14px] border-t border-(--line-soft) pt-[14px]">
+        <span className="shrink-0 font-mono text-[9.5px] tracking-[1.4px] text-ink-1">
+          30D{" "}
+          <span className="tabular-nums text-ink-3">{pct(stats.rate30)}</span>
+        </span>
+        <svg
+          viewBox="0 0 200 24"
+          preserveAspectRatio="none"
+          className="block h-[22px] min-w-0 flex-1"
+        >
+          <polyline
+            points={stats.series30
+              .map(
+                (count, i) =>
+                  `${((i / (stats.series30.length - 1)) * 200).toFixed(1)},${(
+                    22 - (count / HABITS.length) * 20
+                  ).toFixed(1)}`,
+              )
+              .join(" ")}
+            fill="none"
+            stroke="var(--accent)"
+            strokeWidth="1.4"
+            strokeLinejoin="round"
+            strokeLinecap="round"
+            opacity="0.85"
+          />
+        </svg>
       </div>
     </Panel>
   );

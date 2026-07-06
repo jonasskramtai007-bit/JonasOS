@@ -38,16 +38,42 @@ function classify(text) {
 }
 
 const server = createServer(async (req, res) => {
+  const chunks = [];
+  for await (const chunk of req) chunks.push(chunk);
+  const raw = Buffer.concat(chunks).toString();
+
+  // fake Resend endpoint (set RESEND_BASE_URL=http://localhost:54322)
+  if (req.method === "POST" && req.url.startsWith("/emails")) {
+    const email = JSON.parse(raw);
+    console.log(`[anthropic-stub] EMAIL to ${email.to}: ${email.subject}\n${email.text}`);
+    res.writeHead(200, { "content-type": "application/json" });
+    return res.end(JSON.stringify({ id: "email_stub" }));
+  }
+
   if (req.method !== "POST" || !req.url.startsWith("/v1/messages")) {
     res.writeHead(404, { "content-type": "application/json" });
     return res.end(JSON.stringify({ error: "not found" }));
   }
-  const chunks = [];
-  for await (const chunk of req) chunks.push(chunk);
-  const body = JSON.parse(Buffer.concat(chunks).toString());
+  const body = JSON.parse(raw);
   const text = body.messages?.[0]?.content ?? "";
-  const result = classify(typeof text === "string" ? text : "");
-  console.log(`[anthropic-stub] "${String(text).slice(0, 40)}" -> ${result.route}`);
+  const schemaProps = body.output_config?.format?.schema?.properties ?? null;
+
+  let out;
+  if (schemaProps && "route" in schemaProps) {
+    out = JSON.stringify(classify(typeof text === "string" ? text : ""));
+    console.log(`[anthropic-stub] classify "${String(text).slice(0, 40)}" -> ${JSON.parse(out).route}`);
+  } else if (schemaProps && "wins" in schemaProps) {
+    out = JSON.stringify({
+      wins: "- Stub win drawn from the week's completed tasks",
+      slipped: "- Stub slip: habits were inconsistent midweek",
+      open_loops: "- Stub open loop from an unfinished task",
+    });
+    console.log("[anthropic-stub] review draft generated");
+  } else {
+    out = "Stub message: two tasks still open tonight.\nEasiest missing habit: WATER.\nNo journal entry yet.";
+    console.log("[anthropic-stub] text message generated");
+  }
+
   res.writeHead(200, { "content-type": "application/json" });
   res.end(
     JSON.stringify({
@@ -55,7 +81,7 @@ const server = createServer(async (req, res) => {
       type: "message",
       role: "assistant",
       model: body.model,
-      content: [{ type: "text", text: JSON.stringify(result) }],
+      content: [{ type: "text", text: out }],
       stop_reason: "end_turn",
       stop_sequence: null,
       usage: { input_tokens: 100, output_tokens: 50 },

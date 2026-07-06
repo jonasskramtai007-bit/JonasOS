@@ -45,6 +45,12 @@ Inspect stub state directly: `curl http://localhost:54321/rest/v1/<table>?select
   PUT `/api/day` (journal/habits/today_will upsert), POST `/api/goals` +
   PATCH/DELETE `/api/goals/[id]`, PUT `/api/finance` (monthly upsert),
   PUT `/api/review` (409 once sealed). Each writes an `audit_log` row.
+- Cron: GET `/api/cron/daily-prompt` with `Authorization: Bearer $CRON_SECRET`
+  (env `CRON_SECRET=...`); 401 otherwise. `?force=1` bypasses the PROMPT_HOUR
+  gate and once-per-day dedupe. Email goes through RESEND_BASE_URL — point it
+  at the anthropic stub (:54322) which fakes POST /emails and logs the body.
+- Review: first GET of /review auto-drafts via Haiku when week data exists;
+  PUT `/api/review` with `{"sealed":true}` generates identity_sentence once.
 - UI flows: habit buttons on Home (ring updates, persists across reload),
   + NEW form on Tasks, SAVE ENTRY on Journal, add-goal inputs (Enter),
   ADD SNAPSHOT form on Finance, SEAL WEEK on Review (locks textareas).
