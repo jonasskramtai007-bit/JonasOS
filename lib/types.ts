@@ -48,6 +48,16 @@ export interface FinanceSnapshot {
   spend: number | null;
 }
 
+export interface RawCapture {
+  id: string;
+  source: string;
+  raw_text: string;
+  classification: Record<string, unknown> | null;
+  routed_to: string | null;
+  routed_id: string | null;
+  created_at: string;
+}
+
 export interface WeeklyReview {
   id: string;
   week_start: string;

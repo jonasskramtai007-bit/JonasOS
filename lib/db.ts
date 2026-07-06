@@ -7,6 +7,7 @@ import type {
   DailyLog,
   FinanceSnapshot,
   Goal,
+  RawCapture,
   Task,
   WeeklyReview,
 } from "./types";
@@ -86,6 +87,36 @@ export async function listSnapshots(): Promise<FinanceSnapshot[]> {
     .limit(24);
   throwIf(error);
   return (data ?? []) as FinanceSnapshot[];
+}
+
+/** Unrouted captures (pending) plus the most recently filed ones. */
+export async function listInbox(): Promise<{
+  pending: RawCapture[];
+  filed: RawCapture[];
+}> {
+  const client = db();
+  const [pendingRes, filedRes] = await Promise.all([
+    client
+      .from("raw_captures")
+      .select("*")
+      .eq("user_id", USER_ID)
+      .is("routed_id", null)
+      .order("created_at", { ascending: false })
+      .limit(100),
+    client
+      .from("raw_captures")
+      .select("*")
+      .eq("user_id", USER_ID)
+      .not("routed_id", "is", null)
+      .order("created_at", { ascending: false })
+      .limit(20),
+  ]);
+  throwIf(pendingRes.error);
+  throwIf(filedRes.error);
+  return {
+    pending: (pendingRes.data ?? []) as RawCapture[],
+    filed: (filedRes.data ?? []) as RawCapture[],
+  };
 }
 
 export async function getWeeklyReview(
