@@ -19,7 +19,7 @@ export function Panel({
 }) {
   return (
     <section
-      className={`rounded-[14px] border border-(--line) bg-(--surf-1) p-5 backdrop-blur-[14px] ${className}`}
+      className={`rounded-[10px] border border-(--line) bg-(--surf-1) p-5 backdrop-blur-[14px] ${className}`}
     >
       {(index || title || right) && (
         <div className="mb-[18px] flex items-center justify-between">

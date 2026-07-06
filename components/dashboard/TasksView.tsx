@@ -81,19 +81,19 @@ function NewTaskForm({ onDone }: { onDone: () => void }) {
   }
 
   return (
-    <div className="mb-[22px] flex items-center gap-[10px] rounded-[12px] border border-(--accent-line) bg-(--surf-1) p-[14px]">
+    <div className="mb-[22px] flex items-center gap-[10px] rounded-[9px] border border-(--accent-line) bg-(--surf-1) p-[14px]">
       <input
         autoFocus
         value={title}
         onChange={(e) => setTitle(e.target.value)}
         onKeyDown={(e) => e.key === "Enter" && submit()}
         placeholder="task title…"
-        className="flex-1 rounded-[9px] border border-(--line-strong) bg-(--surf-3) px-3 py-[9px] text-[13px] text-ink-4 outline-none focus:border-(--accent-line)"
+        className="flex-1 rounded-[7px] border border-(--line-strong) bg-(--surf-3) px-3 py-[9px] text-[13px] text-ink-4 outline-none focus:border-(--accent-line)"
       />
       <select
         value={urgency}
         onChange={(e) => setUrgency(e.target.value as Urgency)}
-        className="rounded-[9px] border border-(--line-strong) bg-(--surf-3) px-2 py-[9px] font-mono text-[11px] text-ink-3 outline-none"
+        className="rounded-[7px] border border-(--line-strong) bg-(--surf-3) px-2 py-[9px] font-mono text-[11px] text-ink-3 outline-none"
       >
         <option value="today">TODAY</option>
         <option value="week">WEEK</option>
@@ -105,7 +105,7 @@ function NewTaskForm({ onDone }: { onDone: () => void }) {
         onChange={(e) => setCategory(e.target.value)}
         onKeyDown={(e) => e.key === "Enter" && submit()}
         placeholder="category"
-        className="w-[110px] rounded-[9px] border border-(--line-strong) bg-(--surf-3) px-3 py-[9px] font-mono text-[11px] text-ink-4 outline-none focus:border-(--accent-line)"
+        className="w-[110px] rounded-[7px] border border-(--line-strong) bg-(--surf-3) px-3 py-[9px] font-mono text-[11px] text-ink-4 outline-none focus:border-(--accent-line)"
       />
       <label className="flex cursor-pointer items-center gap-[6px] font-mono text-[10px] tracking-[1px] text-ink-2">
         <input type="checkbox" checked={key} onChange={(e) => setKey(e.target.checked)} />
@@ -114,7 +114,7 @@ function NewTaskForm({ onDone }: { onDone: () => void }) {
       <button
         onClick={submit}
         disabled={busy || !title.trim()}
-        className="cursor-pointer rounded-[9px] bg-accent px-4 py-[9px] font-mono text-[10.5px] font-semibold tracking-[1.5px] text-on-accent disabled:opacity-50"
+        className="cursor-pointer rounded-[7px] bg-accent px-4 py-[9px] font-mono text-[10.5px] font-semibold tracking-[1.5px] text-on-accent disabled:opacity-50"
       >
         ADD
       </button>
@@ -170,9 +170,9 @@ export function TasksView({ tasks }: { tasks: Task[] }) {
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
           placeholder="filter tasks…"
-          className="w-[220px] rounded-[9px] border border-(--line-strong) bg-(--surf-3) px-3 py-[9px] font-mono text-[11px] text-ink-4 outline-none focus:border-(--accent-line)"
+          className="w-[220px] rounded-[7px] border border-(--line-strong) bg-(--surf-3) px-3 py-[9px] font-mono text-[11px] text-ink-4 outline-none focus:border-(--accent-line)"
         />
-        <div className="flex rounded-[9px] border border-(--line-strong) bg-(--wash) p-[3px]">
+        <div className="flex rounded-[7px] border border-(--line-strong) bg-(--wash) p-[3px]">
           {(["kanban", "list"] as const).map((mode) => (
             <button
               key={mode}
@@ -187,7 +187,7 @@ export function TasksView({ tasks }: { tasks: Task[] }) {
         </div>
         <button
           onClick={() => setAdding((a) => !a)}
-          className="cursor-pointer rounded-[9px] bg-accent px-4 py-[9px] font-mono text-[10.5px] font-semibold tracking-[1.5px] text-on-accent"
+          className="cursor-pointer rounded-[7px] bg-accent px-4 py-[9px] font-mono text-[10.5px] font-semibold tracking-[1.5px] text-on-accent"
         >
           + NEW
         </button>
@@ -196,7 +196,7 @@ export function TasksView({ tasks }: { tasks: Task[] }) {
       {adding && <NewTaskForm onDone={() => setAdding(false)} />}
 
       {tasks.length === 0 && !adding ? (
-        <div className="rounded-[12px] border border-(--line-soft) bg-(--surf-2) p-8 text-center text-[13px] text-ink-1">
+        <div className="rounded-[9px] border border-(--line-soft) bg-(--surf-2) p-8 text-center text-[13px] text-ink-1">
           No tasks yet — hit + NEW to add the first one.
         </div>
       ) : view === "kanban" ? (
@@ -204,7 +204,7 @@ export function TasksView({ tasks }: { tasks: Task[] }) {
           {columns.map((column) => (
             <div
               key={column.name}
-              className="rounded-[12px] border border-(--line-soft) bg-(--surf-2) p-[14px]"
+              className="rounded-[9px] border border-(--line-soft) bg-(--surf-2) p-[14px]"
             >
               <div className="mb-[14px] flex items-center justify-between">
                 <span className="font-mono text-[10px] tracking-[1.5px] text-ink-3">
@@ -218,7 +218,7 @@ export function TasksView({ tasks }: { tasks: Task[] }) {
                 {column.cards.map((task) => (
                   <div
                     key={task.id}
-                    className="rounded-[10px] border border-(--line) bg-(--surf-4) p-[13px]"
+                    className="rounded-[8px] border border-(--line) bg-(--surf-4) p-[13px]"
                   >
                     <div
                       className={`mb-[11px] text-[13.5px] leading-[1.35] ${
@@ -239,7 +239,7 @@ export function TasksView({ tasks }: { tasks: Task[] }) {
           ))}
         </div>
       ) : (
-        <div className="overflow-hidden rounded-[12px] border border-(--line-soft) bg-(--surf-2)">
+        <div className="overflow-hidden rounded-[9px] border border-(--line-soft) bg-(--surf-2)">
           {columns.flatMap((column) =>
             column.cards.map((task) => {
               const p = pill(task);

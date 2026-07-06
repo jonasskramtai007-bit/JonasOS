@@ -35,7 +35,7 @@ function GoalPanel({
   }
 
   return (
-    <div className="rounded-[14px] border border-(--line) bg-(--surf-1) p-[22px]">
+    <div className="rounded-[10px] border border-(--line) bg-(--surf-1) p-[22px]">
       <div className="mb-4 font-mono text-[10.5px] tracking-[1.5px] text-accent-soft">
         {label}
       </div>
@@ -76,7 +76,7 @@ function GoalPanel({
         onChange={(e) => setText(e.target.value)}
         onKeyDown={(e) => e.key === "Enter" && add()}
         placeholder={placeholder}
-        className="w-full rounded-[8px] border border-dashed border-(--line-strong) bg-transparent px-[11px] py-[9px] font-mono text-[11px] text-ink-3 outline-none focus:border-(--accent-line)"
+        className="w-full rounded-[7px] border border-dashed border-(--line-strong) bg-transparent px-[11px] py-[9px] font-mono text-[11px] text-ink-3 outline-none focus:border-(--accent-line)"
       />
     </div>
   );
@@ -110,7 +110,7 @@ export function GoalsView({ goals }: { goals: Goal[] }) {
           placeholder="+ add monthly goal"
         />
       </div>
-      <div className="rounded-[14px] border border-(--line-soft) bg-(--surf-2) p-[22px]">
+      <div className="rounded-[10px] border border-(--line-soft) bg-(--surf-2) p-[22px]">
         <div className="mb-4 font-mono text-[10.5px] tracking-[1.5px] text-ink-1">
           ARCHIVE · COMPLETED
         </div>

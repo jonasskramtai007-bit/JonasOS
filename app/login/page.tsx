@@ -32,7 +32,7 @@ function LoginForm() {
     <main className="flex min-h-screen items-center justify-center px-6">
       <form
         onSubmit={handleSubmit}
-        className="w-full max-w-90 rounded-[14px] border border-(--line) bg-(--surf-1) p-8 backdrop-blur-[14px]"
+        className="w-full max-w-90 rounded-[10px] border border-(--line) bg-(--surf-1) p-8 backdrop-blur-[14px]"
       >
         <div className="mb-8 flex items-center gap-[9px]">
           <div className="h-[9px] w-[9px] rounded-[2px] bg-accent" />
@@ -52,7 +52,7 @@ function LoginForm() {
           autoFocus
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="mb-4 w-full rounded-[9px] border border-(--line-strong) bg-(--surf-3) px-3 py-[11px] text-[14px] text-ink-4 outline-none focus:border-(--accent-line)"
+          className="mb-4 w-full rounded-[7px] border border-(--line-strong) bg-(--surf-3) px-3 py-[11px] text-[14px] text-ink-4 outline-none focus:border-(--accent-line)"
         />
         {error && (
           <p className="mb-4 font-mono text-[10px] tracking-[1.2px] text-danger">
@@ -62,7 +62,7 @@ function LoginForm() {
         <button
           type="submit"
           disabled={busy || password.length === 0}
-          className="w-full cursor-pointer rounded-[9px] bg-accent py-[11px] font-mono text-[10.5px] font-semibold tracking-[1.5px] text-on-accent disabled:opacity-50"
+          className="w-full cursor-pointer rounded-[7px] bg-accent py-[11px] font-mono text-[10.5px] font-semibold tracking-[1.5px] text-on-accent disabled:opacity-50"
         >
           {busy ? "UNLOCKING…" : "ENTER"}
         </button>

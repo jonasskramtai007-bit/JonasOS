@@ -52,7 +52,7 @@ export function JournalView({
         <span className="text-ink-3">JOURNAL</span>
       </div>
 
-      <div className="mb-[26px] rounded-[14px] border border-(--line) bg-(--surf-1) p-5">
+      <div className="mb-[26px] rounded-[10px] border border-(--line) bg-(--surf-1) p-5">
         <textarea
           value={body}
           onChange={(e) => setBody(e.target.value)}
@@ -85,7 +85,7 @@ export function JournalView({
           <button
             onClick={save}
             disabled={busy}
-            className="cursor-pointer rounded-[9px] bg-accent px-[18px] py-[9px] font-mono text-[10.5px] font-semibold tracking-[1.5px] text-on-accent disabled:opacity-50"
+            className="cursor-pointer rounded-[7px] bg-accent px-[18px] py-[9px] font-mono text-[10.5px] font-semibold tracking-[1.5px] text-on-accent disabled:opacity-50"
           >
             SAVE ENTRY
           </button>
