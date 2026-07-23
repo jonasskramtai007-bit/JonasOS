@@ -5,16 +5,17 @@ import { useRouter } from "next/navigation";
 import { Panel } from "./Panel";
 import { Pill } from "./Pill";
 import { api } from "@/lib/api-client";
-import { PROFILE } from "@/lib/config";
 
 export function SessionCard({
   greeting,
   longDate,
   todayWill,
+  name,
 }: {
   greeting: string;
   longDate: string;
   todayWill: string;
+  name: string;
 }) {
   const router = useRouter();
   const [will, setWill] = useState(todayWill);
@@ -53,7 +54,7 @@ export function SessionCard({
     <Panel index="03" title="SESSION" className="p-6">
       <div className="mb-[6px] text-[28px] font-light leading-[1.25] tracking-[-0.4px]">
         {greeting},{" "}
-        <span className="font-serif italic text-accent">{PROFILE.name}</span>
+        <span className="font-serif italic text-accent">{name}</span>
       </div>
       <div className="mb-[22px] flex items-center gap-[14px] font-mono text-[12px] text-ink-2">
         <span className="tracking-[1px]">{longDate}</span>

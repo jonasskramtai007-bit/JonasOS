@@ -2,7 +2,8 @@
 // page load, and the identity sentence generated once, on seal.
 
 import { createServiceClient } from "./supabase/server";
-import { USER_ID, HABITS } from "./config";
+import { USER_ID } from "./config";
+import { getSettings } from "./settings";
 import { listCompletedTasksBetween, listLogsBetween } from "./db";
 import { haikuJSON, haikuText } from "./haiku";
 import type { WeeklyReview } from "./types";
@@ -23,14 +24,15 @@ export interface WeekData {
 
 export async function gatherWeekData(weekStart: string): Promise<WeekData> {
   const end = weekEnd(weekStart);
-  const [tasks, logs] = await Promise.all([
+  const [tasks, logs, settings] = await Promise.all([
     listCompletedTasksBetween(weekStart, end),
     listLogsBetween(weekStart, end),
+    getSettings(),
   ]);
   return {
     completedTasks: tasks.map((t) => t.title),
     habitDone: logs.reduce((sum, l) => sum + (l.notes?.habits?.length ?? 0), 0),
-    habitPossible: 7 * HABITS.length,
+    habitPossible: 7 * settings.habits.length,
     journalEntries: logs
       .filter((l) => l.notes?.journal)
       .map((l) => `${l.log_date}: ${l.notes.journal}`),

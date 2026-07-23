@@ -36,7 +36,13 @@ export default async function HomePage() {
   return (
     <div className="grid grid-cols-1 items-start gap-[18px] lg:grid-cols-[300px_1fr_322px]">
       <div className="flex flex-col gap-[18px]">
-        <OperatorCard streak={data.streak} rate7={data.habitStats.rate7} />
+        <OperatorCard
+          streak={data.streak}
+          rate7={data.habitStats.rate7}
+          name={data.settings.name}
+          role={data.settings.role}
+          focus={data.settings.focus}
+        />
         <FinancePulseCard snapshots={data.snapshots} />
       </div>
       <div className="flex flex-col gap-[18px] max-lg:-order-1">
@@ -44,11 +50,13 @@ export default async function HomePage() {
           greeting={greetingNow()}
           longDate={longDate}
           todayWill={data.todayLog?.notes?.today_will ?? ""}
+          name={data.settings.name}
         />
         <TodayCard tasks={data.todayTasks} />
         <HabitsCard
           done={data.todayLog?.notes?.habits ?? []}
           stats={data.habitStats}
+          habits={data.settings.habits}
         />
       </div>
       <div className="flex flex-col gap-[18px]">

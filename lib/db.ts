@@ -4,6 +4,7 @@ import { createServiceClient } from "./supabase/server";
 import { USER_ID } from "./config";
 import { localDateISO, yesterdayISO, weekStartISO } from "./dates";
 import { habitStats } from "./habits";
+import { getSettings } from "./settings";
 import type {
   DailyLog,
   FinanceSnapshot,
@@ -190,7 +191,7 @@ export function computeStreak(logs: DailyLog[]): number {
 export async function getHomeData() {
   const today = localDateISO();
   const yesterday = yesterdayISO();
-  const [todayTasks, goals, todayLog, yesterdayLog, snapshots, recentLogs] =
+  const [todayTasks, goals, todayLog, yesterdayLog, snapshots, recentLogs, settings] =
     await Promise.all([
       listTodayTasks(),
       listGoals(),
@@ -198,6 +199,7 @@ export async function getHomeData() {
       getDailyLog(yesterday),
       listSnapshots(),
       listRecentLogs(),
+      getSettings(),
     ]);
   return {
     today,
@@ -208,6 +210,7 @@ export async function getHomeData() {
     yesterdayLog,
     snapshots,
     streak: computeStreak(recentLogs),
-    habitStats: habitStats(recentLogs, today),
+    habitStats: habitStats(recentLogs, settings.habits.length, today),
+    settings,
   };
 }

@@ -3,7 +3,7 @@
 // the capture then simply stays in the inbox, nothing is lost.
 
 import Anthropic from "@anthropic-ai/sdk";
-import { HABITS, TIMEZONE } from "./config";
+import { TIMEZONE } from "./config";
 import type { GoalHorizon, Mood, Urgency } from "./types";
 
 export interface Classification {
@@ -61,7 +61,7 @@ const SCHEMA = {
   additionalProperties: false,
 } as const;
 
-function systemPrompt(): string {
+function systemPrompt(habits: string[]): string {
   const today = new Date().toLocaleDateString("en-GB", {
     weekday: "long",
     year: "numeric",
@@ -84,12 +84,13 @@ Rules:
 - urgency (tasks only): "today" if it must happen today or has words like tonight/asap, "week" for this week or unspecified deadlines, "month" for later this month, "someday" for no time pressure. Use "week" when not a task.
 - horizon (goals only): "week" unless the text clearly spans a month. Use "week" when not a goal.
 - category: one lowercase word (health, finance, study, admin, project, social...) or null.
-- mood (journal only): low, flat, or good if the text expresses one; otherwise null. The user's daily habits are ${HABITS.join(", ")} — journal mentions of doing them are still journal entries.`;
+- mood (journal only): low, flat, or good if the text expresses one; otherwise null. The user's daily habits are ${habits.join(", ")} — journal mentions of doing them are still journal entries.`;
 }
 
 /** Classify a capture. Returns null if unconfigured or anything fails. */
 export async function classifyCapture(
   text: string,
+  habits: string[],
 ): Promise<Classification | null> {
   if (!process.env.ANTHROPIC_API_KEY) return null;
   try {
@@ -97,7 +98,7 @@ export async function classifyCapture(
     const response = await client.messages.create({
       model: "claude-haiku-4-5",
       max_tokens: 1024,
-      system: systemPrompt(),
+      system: systemPrompt(habits),
       output_config: { format: { type: "json_schema", schema: SCHEMA } },
       messages: [{ role: "user", content: text }],
     });

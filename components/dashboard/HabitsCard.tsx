@@ -4,7 +4,6 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Panel } from "./Panel";
 import { api } from "@/lib/api-client";
-import { HABITS } from "@/lib/config";
 import { pct } from "@/lib/habits";
 import type { HabitStats } from "@/lib/habits";
 
@@ -13,9 +12,11 @@ const RING_CIRCUMFERENCE = 188.5; // 2πr for r=30
 export function HabitsCard({
   done,
   stats,
+  habits: HABITS,
 }: {
   done: string[];
   stats: HabitStats;
+  habits: string[];
 }) {
   const router = useRouter();
   const [current, setCurrent] = useState<string[]>(done);

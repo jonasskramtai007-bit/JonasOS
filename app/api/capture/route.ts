@@ -3,6 +3,7 @@ import { createServiceClient } from "@/lib/supabase/server";
 import { USER_ID } from "@/lib/config";
 import { audit } from "@/lib/audit";
 import { classifyCapture } from "@/lib/classify";
+import { getSettings } from "@/lib/settings";
 import { routeCapture } from "@/lib/route-capture";
 
 /**
@@ -28,7 +29,8 @@ export async function POST(request: NextRequest) {
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
   await audit(db, "capture.create", "raw_capture", capture.id);
 
-  const classification = await classifyCapture(text);
+  const settings = await getSettings();
+  const classification = await classifyCapture(text, settings.habits);
   if (!classification) {
     return NextResponse.json({ capture, routed_to: null });
   }

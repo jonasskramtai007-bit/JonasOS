@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/server";
-import { USER_ID, HABITS, TIMEZONE } from "@/lib/config";
+import { USER_ID, TIMEZONE } from "@/lib/config";
+import { getSettings } from "@/lib/settings";
 import { localDateISO } from "@/lib/dates";
 import { getDailyLog, listRecentLogs, listTodayTasks } from "@/lib/db";
 import { habitStats, pct } from "@/lib/habits";
@@ -50,14 +51,16 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ skipped: "already sent today" });
   }
 
-  const [openTasks, recentLogs] = await Promise.all([
+  const [openTasks, recentLogs, settings] = await Promise.all([
     listTodayTasks(),
     listRecentLogs(40),
+    getSettings(),
   ]);
+  const HABITS = settings.habits;
   const habitsDone = todayLog?.notes?.habits ?? [];
   const habitsMissing = HABITS.filter((h) => !habitsDone.includes(h));
   const journalDone = !!todayLog?.notes?.journal;
-  const stats = habitStats(recentLogs, today);
+  const stats = habitStats(recentLogs, HABITS.length, today);
 
   const dataSummary = [
     `Open key/today tasks (${openTasks.length}): ${openTasks.map((t) => t.title).join("; ") || "none"}`,

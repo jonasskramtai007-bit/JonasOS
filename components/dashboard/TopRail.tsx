@@ -73,6 +73,17 @@ export function TopRail() {
           })}
         </nav>
         <div className="flex flex-1 items-center justify-end gap-[14px] font-mono">
+          <Link
+            href="/settings"
+            aria-label="settings"
+            className={`rounded-[7px] border px-[9px] py-[5px] font-mono text-[10px] ${
+              pathname === "/settings"
+                ? "border-(--accent-line) text-accent"
+                : "border-transparent text-ink-1 hover:text-ink-3"
+            }`}
+          >
+            ⚙
+          </Link>
           <button
             onClick={toggleTheme}
             className="cursor-pointer rounded-[7px] border border-(--line-strong) px-[11px] py-[5px] font-mono text-[9px] tracking-[1.4px] text-ink-1 hover:text-ink-3"
