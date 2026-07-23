@@ -53,8 +53,8 @@ export function HabitsCard({
         </span>
       }
     >
-      <div className="flex items-center gap-[22px]">
-        <div className="grid flex-1 grid-cols-3 gap-[9px]">
+      <div className="flex items-center gap-4 max-sm:flex-col sm:gap-[22px]">
+        <div className="grid w-full flex-1 grid-cols-3 gap-[9px]">
           {HABITS.map((habit) => {
             const isDone = current.includes(habit);
             return (

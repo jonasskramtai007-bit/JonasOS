@@ -68,7 +68,7 @@ export function ReviewView({
 
   return (
     <div className="mx-auto max-w-[900px]">
-      <div className="mb-6 flex items-center gap-[14px]">
+      <div className="mb-6 flex flex-wrap items-center gap-[14px]">
         <div className="flex-1">
           <div className="mb-2 flex items-center gap-[7px] font-mono text-[11px] tracking-[1.6px]">
             <span className="text-accent-soft">{"//"}</span>
@@ -106,7 +106,7 @@ export function ReviewView({
         </div>
       )}
 
-      <div className="grid grid-cols-2 gap-[18px]">
+      <div className="grid grid-cols-1 gap-[18px] sm:grid-cols-2">
         {SECTIONS.map((section) => (
           <div
             key={section.field}
