@@ -1,10 +1,11 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Pill } from "./Pill";
 import type { PillTone } from "./Pill";
 import { api } from "@/lib/api-client";
+import { useMirror } from "@/lib/use-mirror";
 import type { Task, Urgency } from "@/lib/types";
 
 const COLUMNS: { name: string; match: (t: Task) => boolean }[] = [
@@ -44,14 +45,14 @@ function TaskMeta({ task, onToggle, onDelete }: {
       <span className="ml-auto flex gap-2">
         <button
           onClick={onToggle}
-          className="cursor-pointer font-mono text-[10px] text-ink-2 hover:text-accent"
+          className="cursor-pointer font-mono text-[10px] text-ink-2 hover:text-accent active:scale-90"
         >
           {task.completed_at ? "↺" : "✓"}
         </button>
         <button
           onClick={onDelete}
           aria-label={`delete ${task.title}`}
-          className="cursor-pointer font-mono text-[10px] text-ink-1 hover:text-danger"
+          className="cursor-pointer font-mono text-[10px] text-ink-1 hover:text-danger active:scale-90"
         >
           ✕
         </button>
@@ -60,24 +61,22 @@ function TaskMeta({ task, onToggle, onDelete }: {
   );
 }
 
-function NewTaskForm({ onDone }: { onDone: () => void }) {
-  const router = useRouter();
+function NewTaskForm({
+  onAdd,
+  onDone,
+}: {
+  onAdd: (fields: { title: string; urgency: Urgency; category: string; key: boolean }) => void;
+  onDone: () => void;
+}) {
   const [title, setTitle] = useState("");
   const [urgency, setUrgency] = useState<Urgency>("week");
   const [category, setCategory] = useState("");
   const [key, setKey] = useState(false);
-  const [busy, setBusy] = useState(false);
 
-  async function submit() {
-    if (!title.trim() || busy) return;
-    setBusy(true);
-    try {
-      await api("/api/tasks", "POST", { title, urgency, category, key });
-      router.refresh();
-      onDone();
-    } finally {
-      setBusy(false);
-    }
+  function submit() {
+    if (!title.trim()) return;
+    onAdd({ title: title.trim(), urgency, category: category.trim(), key });
+    onDone();
   }
 
   return (
@@ -113,8 +112,8 @@ function NewTaskForm({ onDone }: { onDone: () => void }) {
       </label>
       <button
         onClick={submit}
-        disabled={busy || !title.trim()}
-        className="cursor-pointer rounded-[7px] bg-accent px-4 py-[9px] font-mono text-[10.5px] font-semibold tracking-[1.5px] text-on-accent disabled:opacity-50"
+        disabled={!title.trim()}
+        className="cursor-pointer rounded-[7px] bg-accent px-4 py-[9px] font-mono text-[10.5px] font-semibold tracking-[1.5px] text-on-accent active:scale-95 disabled:opacity-50"
       >
         ADD
       </button>
@@ -128,30 +127,68 @@ function NewTaskForm({ onDone }: { onDone: () => void }) {
   );
 }
 
+function tempTask(fields: {
+  title: string;
+  urgency: Urgency;
+  category: string;
+  key: boolean;
+}): Task {
+  return {
+    id: `temp-${Date.now()}`,
+    title: fields.title,
+    description: null,
+    urgency: fields.urgency,
+    key: fields.key,
+    priority_score: null,
+    tags: [],
+    category: fields.category || null,
+    due_date: null,
+    completed_at: null,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  };
+}
+
 export function TasksView({ tasks }: { tasks: Task[] }) {
   const router = useRouter();
+  const [items, setItems] = useMirror(tasks);
+  const [, startTransition] = useTransition();
   const [view, setView] = useState<"kanban" | "list">("kanban");
   const [filter, setFilter] = useState("");
   const [adding, setAdding] = useState(false);
 
+  const refresh = () => startTransition(() => router.refresh());
+
   const filtered = useMemo(() => {
     const q = filter.trim().toLowerCase();
-    if (!q) return tasks;
-    return tasks.filter(
+    if (!q) return items;
+    return items.filter(
       (t) =>
         t.title.toLowerCase().includes(q) ||
         (t.category ?? "").toLowerCase().includes(q),
     );
-  }, [tasks, filter]);
+  }, [items, filter]);
 
-  async function toggle(task: Task) {
-    await api(`/api/tasks/${task.id}`, "PATCH", { completed: !task.completed_at });
-    router.refresh();
+  function toggle(task: Task) {
+    const now = task.completed_at ? null : new Date().toISOString();
+    setItems(items.map((t) => (t.id === task.id ? { ...t, completed_at: now } : t)));
+    api(`/api/tasks/${task.id}`, "PATCH", { completed: !task.completed_at })
+      .then(refresh)
+      .catch(() => setItems(tasks));
   }
 
-  async function remove(task: Task) {
-    await api(`/api/tasks/${task.id}`, "DELETE");
-    router.refresh();
+  function remove(task: Task) {
+    setItems(items.filter((t) => t.id !== task.id));
+    api(`/api/tasks/${task.id}`, "DELETE")
+      .then(refresh)
+      .catch(() => setItems(tasks));
+  }
+
+  function add(fields: { title: string; urgency: Urgency; category: string; key: boolean }) {
+    setItems([tempTask(fields), ...items]);
+    api("/api/tasks", "POST", fields)
+      .then(refresh)
+      .catch(() => setItems(tasks));
   }
 
   const columns = COLUMNS.map((col) => ({
@@ -187,15 +224,15 @@ export function TasksView({ tasks }: { tasks: Task[] }) {
         </div>
         <button
           onClick={() => setAdding((a) => !a)}
-          className="cursor-pointer rounded-[7px] bg-accent px-4 py-[9px] font-mono text-[10.5px] font-semibold tracking-[1.5px] text-on-accent"
+          className="cursor-pointer rounded-[7px] bg-accent px-4 py-[9px] font-mono text-[10.5px] font-semibold tracking-[1.5px] text-on-accent active:scale-95"
         >
           + NEW
         </button>
       </div>
 
-      {adding && <NewTaskForm onDone={() => setAdding(false)} />}
+      {adding && <NewTaskForm onAdd={add} onDone={() => setAdding(false)} />}
 
-      {tasks.length === 0 && !adding ? (
+      {items.length === 0 && !adding ? (
         <div className="rounded-[9px] border border-(--line-soft) bg-(--surf-2) p-8 text-center text-[13px] text-ink-1">
           No tasks yet — hit + NEW to add the first one.
         </div>
@@ -266,13 +303,13 @@ export function TasksView({ tasks }: { tasks: Task[] }) {
                   <Pill tone={p.tone}>{p.label}</Pill>
                   <button
                     onClick={() => toggle(task)}
-                    className="cursor-pointer font-mono text-[10px] text-ink-2 hover:text-accent"
+                    className="cursor-pointer font-mono text-[10px] text-ink-2 hover:text-accent active:scale-90"
                   >
                     {task.completed_at ? "↺" : "✓"}
                   </button>
                   <button
                     onClick={() => remove(task)}
-                    className="cursor-pointer font-mono text-[10px] text-ink-1 hover:text-danger"
+                    className="cursor-pointer font-mono text-[10px] text-ink-1 hover:text-danger active:scale-90"
                   >
                     ✕
                   </button>

@@ -1,48 +1,44 @@
 "use client";
 
-import { useState } from "react";
+import { useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { CheckDot } from "./CheckDot";
 import { Panel } from "./Panel";
 import { Pill } from "./Pill";
 import { api } from "@/lib/api-client";
+import { useMirror } from "@/lib/use-mirror";
 import type { Task } from "@/lib/types";
 
 export function TodayCard({ tasks }: { tasks: Task[] }) {
   const router = useRouter();
-  const [pending, setPending] = useState<string | null>(null);
+  const [items, setItems] = useMirror(tasks);
+  const [, startTransition] = useTransition();
 
-  async function toggle(task: Task) {
-    if (pending) return;
-    setPending(task.id);
-    try {
-      await api(`/api/tasks/${task.id}`, "PATCH", {
-        completed: !task.completed_at,
-      });
-      router.refresh();
-    } finally {
-      setPending(null);
-    }
+  function toggle(task: Task) {
+    const now = task.completed_at ? null : new Date().toISOString();
+    setItems(items.map((t) => (t.id === task.id ? { ...t, completed_at: now } : t)));
+    api(`/api/tasks/${task.id}`, "PATCH", { completed: !task.completed_at })
+      .then(() => startTransition(() => router.refresh()))
+      .catch(() => setItems(tasks));
   }
 
   return (
     <Panel index="04" title="TODAY" className="p-[22px]">
-      {tasks.length === 0 ? (
+      {items.length === 0 ? (
         <div className="py-2 text-[13px] text-ink-1">
           Nothing scheduled for today — add tasks in the Tasks tab.
         </div>
       ) : (
         <div className="flex flex-col gap-[2px]">
-          {tasks.map((task) => (
+          {items.map((task) => (
             <div
               key={task.id}
               className="flex items-center gap-[13px] border-b border-(--line-soft) px-1 py-[11px]"
             >
               <button
                 onClick={() => toggle(task)}
-                disabled={pending === task.id}
                 aria-label={`toggle ${task.title}`}
-                className="disabled:opacity-50"
+                className="active:scale-95"
               >
                 <CheckDot done={!!task.completed_at} />
               </button>
