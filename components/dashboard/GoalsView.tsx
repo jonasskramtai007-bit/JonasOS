@@ -96,7 +96,7 @@ export function GoalsView({ goals }: { goals: Goal[] }) {
         <span className="text-accent-soft">{"//"}</span>
         <span className="text-ink-3">GOALS</span>
       </div>
-      <div className="mb-[22px] grid grid-cols-2 items-start gap-[18px]">
+      <div className="mb-[22px] grid grid-cols-1 items-start gap-[18px] sm:grid-cols-2">
         <GoalPanel
           label="THIS WEEK"
           horizon="week"

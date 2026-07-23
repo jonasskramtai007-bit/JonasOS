@@ -67,13 +67,13 @@ export function FinanceView({ snapshots }: { snapshots: FinanceSnapshot[] }) {
         <span className="text-ink-3">FINANCE</span>
       </div>
 
-      <div className="mb-[18px] rounded-[12px] border border-(--line) bg-(--surf-1) p-[34px]">
+      <div className="mb-[18px] rounded-[12px] border border-(--line) bg-(--surf-1) p-6 sm:p-[34px]">
         <div className="mb-3 font-mono text-[10px] tracking-[1.6px] text-ink-1">
           TOTAL SAVINGS
         </div>
         {latest ? (
           <div className="flex items-baseline gap-4">
-            <span className="font-mono text-[60px] font-medium tracking-[-1.5px] tabular-nums">
+            <span className="font-mono text-[42px] sm:text-[60px] font-medium tracking-[-1.5px] tabular-nums">
               {euro(latest.total)}
             </span>
             {delta !== null && (
@@ -92,7 +92,7 @@ export function FinanceView({ snapshots }: { snapshots: FinanceSnapshot[] }) {
         )}
       </div>
 
-      <div className="mb-[18px] grid grid-cols-3 gap-[14px]">
+      <div className="mb-[18px] grid grid-cols-1 gap-[14px] sm:grid-cols-3">
         <StatCard
           label="MONTHLY INCOME"
           value={latest?.income != null ? euro(latest.income) : "—"}
@@ -108,7 +108,7 @@ export function FinanceView({ snapshots }: { snapshots: FinanceSnapshot[] }) {
         />
       </div>
 
-      <div className="grid grid-cols-[1.5fr_1fr] items-start gap-[18px]">
+      <div className="grid grid-cols-1 items-start gap-[18px] lg:grid-cols-[1.5fr_1fr]">
         <div className="rounded-[10px] border border-(--line-soft) bg-(--surf-2) p-[22px]">
           <div className="mb-4 font-mono text-[10px] tracking-[1.5px] text-ink-1">
             SNAPSHOT HISTORY

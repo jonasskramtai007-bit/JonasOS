@@ -108,6 +108,14 @@ body {
   letter-spacing: -0.015em;
 }
 
+/* horizontal scroll without a visible scrollbar (mobile tab rail) */
+.no-scrollbar {
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
 ::selection {
   background: color-mix(in oklab, var(--accent) 24%, transparent);
 }

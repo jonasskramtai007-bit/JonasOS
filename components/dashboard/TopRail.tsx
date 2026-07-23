@@ -47,21 +47,21 @@ export function TopRail() {
 
   return (
     <header className="sticky top-0 z-20 border-b border-(--line) bg-(--rail) backdrop-blur-[16px]">
-      <div className="mx-auto flex max-w-[1440px] items-center gap-5 px-7 py-[15px]">
+      <div className="mx-auto flex max-w-[1440px] flex-wrap items-center gap-x-5 gap-y-2 px-4 py-[13px] sm:px-7 sm:py-[15px]">
         <div className="flex flex-1 items-center gap-[9px]">
           <div className="h-[9px] w-[9px] rounded-[2px] bg-accent" />
           <span className="font-mono text-[13px] font-semibold tracking-[2.5px]">
             JONAS OS
           </span>
         </div>
-        <nav className="flex gap-[2px]">
+        <nav className="no-scrollbar order-last -mx-4 flex w-screen gap-[2px] overflow-x-auto px-4 lg:order-none lg:m-0 lg:w-auto lg:p-0">
           {TABS.map((tab) => {
             const active = pathname === tab.href;
             return (
               <Link
                 key={tab.href}
                 href={tab.href}
-                className={`rounded-[7px] border px-[13px] py-[7px] font-mono text-[10.5px] tracking-[1.5px] ${
+                className={`shrink-0 rounded-[7px] border px-[13px] py-[7px] font-mono text-[10.5px] tracking-[1.5px] ${
                   active
                     ? "border-(--accent-line) bg-(--accent-dim) text-accent"
                     : "border-transparent text-ink-2 hover:bg-(--wash) hover:text-ink-3"
@@ -79,7 +79,7 @@ export function TopRail() {
           >
             {light ? "DARK" : "LIGHT"}
           </button>
-          <span className="text-[11px] tracking-[1px] text-ink-2">
+          <span className="text-[11px] tracking-[1px] text-ink-2 max-md:hidden">
             {dateStr ?? ""}
           </span>
           <div className="flex items-center gap-[6px]">

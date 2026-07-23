@@ -81,7 +81,7 @@ function NewTaskForm({ onDone }: { onDone: () => void }) {
   }
 
   return (
-    <div className="mb-[22px] flex items-center gap-[10px] rounded-[9px] border border-(--accent-line) bg-(--surf-1) p-[14px]">
+    <div className="mb-[22px] flex flex-wrap items-center gap-[10px] rounded-[9px] border border-(--accent-line) bg-(--surf-1) p-[14px]">
       <input
         autoFocus
         value={title}
@@ -161,7 +161,7 @@ export function TasksView({ tasks }: { tasks: Task[] }) {
 
   return (
     <div>
-      <div className="mb-[22px] flex items-center gap-[14px]">
+      <div className="mb-[22px] flex flex-wrap items-center gap-3 sm:gap-[14px]">
         <div className="flex flex-1 items-center gap-[7px] font-mono text-[11px] tracking-[1.6px]">
           <span className="text-accent-soft">{"//"}</span>
           <span className="text-ink-3">TASKS</span>
@@ -170,7 +170,7 @@ export function TasksView({ tasks }: { tasks: Task[] }) {
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
           placeholder="filter tasks…"
-          className="w-[220px] rounded-[7px] border border-(--line-strong) bg-(--surf-3) px-3 py-[9px] font-mono text-[11px] text-ink-4 outline-none focus:border-(--accent-line)"
+          className="w-[220px] max-sm:w-full rounded-[7px] border border-(--line-strong) bg-(--surf-3) px-3 py-[9px] font-mono text-[11px] text-ink-4 outline-none focus:border-(--accent-line)"
         />
         <div className="flex rounded-[7px] border border-(--line-strong) bg-(--wash) p-[3px]">
           {(["kanban", "list"] as const).map((mode) => (
@@ -200,7 +200,7 @@ export function TasksView({ tasks }: { tasks: Task[] }) {
           No tasks yet — hit + NEW to add the first one.
         </div>
       ) : view === "kanban" ? (
-        <div className="grid grid-cols-4 items-start gap-4">
+        <div className="grid grid-cols-1 items-start gap-4 sm:grid-cols-2 xl:grid-cols-4">
           {columns.map((column) => (
             <div
               key={column.name}
