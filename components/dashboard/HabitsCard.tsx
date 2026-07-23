@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Panel } from "./Panel";
 import { api } from "@/lib/api-client";
 import { pct } from "@/lib/habits";
 import type { HabitStats } from "@/lib/habits";
+import { useMirror } from "@/lib/use-mirror";
 
 const RING_CIRCUMFERENCE = 188.5; // 2πr for r=30
 
@@ -19,24 +20,17 @@ export function HabitsCard({
   habits: string[];
 }) {
   const router = useRouter();
-  const [current, setCurrent] = useState<string[]>(done);
-  const [busy, setBusy] = useState(false);
+  const [current, setCurrent] = useMirror(done);
+  const [, startTransition] = useTransition();
 
-  async function toggle(habit: string) {
-    if (busy) return;
+  function toggle(habit: string) {
     const next = current.includes(habit)
       ? current.filter((h) => h !== habit)
       : [...current, habit];
     setCurrent(next); // optimistic
-    setBusy(true);
-    try {
-      await api("/api/day", "PUT", { habits: next });
-      router.refresh();
-    } catch {
-      setCurrent(current); // roll back
-    } finally {
-      setBusy(false);
-    }
+    api("/api/day", "PUT", { habits: next })
+      .then(() => startTransition(() => router.refresh()))
+      .catch(() => setCurrent(done)); // roll back
   }
 
   const doneCount = current.length;
@@ -62,7 +56,7 @@ export function HabitsCard({
               <button
                 key={habit}
                 onClick={() => toggle(habit)}
-                className={`cursor-pointer rounded-[7px] border py-[10px] text-center font-mono text-[10px] tracking-[1.2px] ${
+                className={`cursor-pointer rounded-[7px] border py-[10px] text-center font-mono text-[10px] tracking-[1.2px] active:scale-95 ${
                   isDone
                     ? "border-(--accent-line) bg-(--accent-dim) text-accent"
                     : "border-(--line) text-ink-2"

@@ -1,11 +1,24 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { CheckDot } from "./CheckDot";
 import { Panel } from "./Panel";
 import { api } from "@/lib/api-client";
+import { useMirror } from "@/lib/use-mirror";
 import type { Goal } from "@/lib/types";
+
+function tempGoal(text: string): Goal {
+  return {
+    id: `temp-${Date.now()}`,
+    text,
+    horizon: "week",
+    done: false,
+    completed_at: null,
+    completion_consistency: null,
+    created_at: new Date().toISOString(),
+  };
+}
 
 function GoalRows({
   goals,
@@ -22,7 +35,9 @@ function GoalRows({
           onClick={() => onToggle(goal)}
           className="flex cursor-pointer items-center gap-[11px] px-[2px] py-[7px] text-left"
         >
-          <CheckDot done={goal.done} size={16} />
+          <span className="active:scale-90">
+            <CheckDot done={goal.done} size={16} />
+          </span>
           <span
             className={`flex-1 text-[13px] ${
               goal.done ? "text-ink-1 line-through" : "text-ink-3"
@@ -38,22 +53,36 @@ function GoalRows({
 
 export function GoalsCard({ goals }: { goals: Goal[] }) {
   const router = useRouter();
+  const [items, setItems] = useMirror(goals);
+  const [, startTransition] = useTransition();
   const [text, setText] = useState("");
+  const refresh = () => startTransition(() => router.refresh());
 
-  const week = goals.filter((g) => g.horizon === "week").slice(-5);
-  const month = goals.filter((g) => g.horizon === "month").slice(-5);
+  const week = items.filter((g) => g.horizon === "week").slice(-5);
+  const month = items.filter((g) => g.horizon === "month").slice(-5);
 
-  async function toggle(goal: Goal) {
-    await api(`/api/goals/${goal.id}`, "PATCH", { done: !goal.done });
-    router.refresh();
+  function toggle(goal: Goal) {
+    const done = !goal.done;
+    setItems(
+      items.map((g) =>
+        g.id === goal.id
+          ? { ...g, done, completed_at: done ? new Date().toISOString() : null }
+          : g,
+      ),
+    );
+    api(`/api/goals/${goal.id}`, "PATCH", { done })
+      .then(refresh)
+      .catch(() => setItems(goals));
   }
 
-  async function add() {
+  function add() {
     const value = text.trim();
     if (!value) return;
-    await api("/api/goals", "POST", { text: value, horizon: "week" });
+    setItems([...items, tempGoal(value)]);
     setText("");
-    router.refresh();
+    api("/api/goals", "POST", { text: value, horizon: "week" })
+      .then(refresh)
+      .catch(() => setItems(goals));
   }
 
   return (

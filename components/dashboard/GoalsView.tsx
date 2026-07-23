@@ -1,37 +1,49 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { CheckDot } from "./CheckDot";
 import { api } from "@/lib/api-client";
 import { monthLabel } from "@/lib/dates";
+import { useMirror } from "@/lib/use-mirror";
 import type { Goal, GoalHorizon } from "@/lib/types";
+
+function tempGoal(text: string, horizon: GoalHorizon): Goal {
+  return {
+    id: `temp-${Date.now()}`,
+    text,
+    horizon,
+    done: false,
+    completed_at: null,
+    completion_consistency: null,
+    created_at: new Date().toISOString(),
+  };
+}
 
 function GoalPanel({
   label,
   horizon,
   goals,
+  onToggle,
+  onDelete,
+  onAdd,
   placeholder,
 }: {
   label: string;
   horizon: GoalHorizon;
   goals: Goal[];
+  onToggle: (goal: Goal) => void;
+  onDelete: (goal: Goal) => void;
+  onAdd: (text: string, horizon: GoalHorizon) => void;
   placeholder: string;
 }) {
-  const router = useRouter();
   const [text, setText] = useState("");
 
-  async function toggle(goal: Goal) {
-    await api(`/api/goals/${goal.id}`, "PATCH", { done: !goal.done });
-    router.refresh();
-  }
-
-  async function add() {
+  function add() {
     const value = text.trim();
     if (!value) return;
-    await api("/api/goals", "POST", { text: value, horizon });
+    onAdd(value, horizon);
     setText("");
-    router.refresh();
   }
 
   return (
@@ -48,7 +60,7 @@ function GoalPanel({
             key={goal.id}
             className="group flex items-center gap-3 px-[2px] py-[9px]"
           >
-            <button onClick={() => toggle(goal)} className="cursor-pointer">
+            <button onClick={() => onToggle(goal)} className="cursor-pointer active:scale-90">
               <CheckDot done={goal.done} size={16} />
             </button>
             <span
@@ -59,10 +71,7 @@ function GoalPanel({
               {goal.text}
             </span>
             <button
-              onClick={async () => {
-                await api(`/api/goals/${goal.id}`, "DELETE");
-                router.refresh();
-              }}
+              onClick={() => onDelete(goal)}
               aria-label={`delete ${goal.text}`}
               className="cursor-pointer font-mono text-[10px] text-ink-1 opacity-0 transition-opacity group-hover:opacity-100 hover:text-danger"
             >
@@ -83,9 +92,42 @@ function GoalPanel({
 }
 
 export function GoalsView({ goals }: { goals: Goal[] }) {
-  const week = goals.filter((g) => g.horizon === "week" && !g.done);
-  const month = goals.filter((g) => g.horizon === "month" && !g.done);
-  const archive = goals
+  const router = useRouter();
+  const [items, setItems] = useMirror(goals);
+  const [, startTransition] = useTransition();
+  const refresh = () => startTransition(() => router.refresh());
+
+  function toggle(goal: Goal) {
+    const done = !goal.done;
+    setItems(
+      items.map((g) =>
+        g.id === goal.id
+          ? { ...g, done, completed_at: done ? new Date().toISOString() : null }
+          : g,
+      ),
+    );
+    api(`/api/goals/${goal.id}`, "PATCH", { done })
+      .then(refresh)
+      .catch(() => setItems(goals));
+  }
+
+  function remove(goal: Goal) {
+    setItems(items.filter((g) => g.id !== goal.id));
+    api(`/api/goals/${goal.id}`, "DELETE")
+      .then(refresh)
+      .catch(() => setItems(goals));
+  }
+
+  function add(text: string, horizon: GoalHorizon) {
+    setItems([...items, tempGoal(text, horizon)]);
+    api("/api/goals", "POST", { text, horizon })
+      .then(refresh)
+      .catch(() => setItems(goals));
+  }
+
+  const week = items.filter((g) => g.horizon === "week" && !g.done);
+  const month = items.filter((g) => g.horizon === "month" && !g.done);
+  const archive = items
     .filter((g) => g.done)
     .sort((a, b) => (b.completed_at ?? "").localeCompare(a.completed_at ?? ""))
     .slice(0, 15);
@@ -101,12 +143,18 @@ export function GoalsView({ goals }: { goals: Goal[] }) {
           label="THIS WEEK"
           horizon="week"
           goals={week}
+          onToggle={toggle}
+          onDelete={remove}
+          onAdd={add}
           placeholder="+ add weekly goal"
         />
         <GoalPanel
           label="THIS MONTH"
           horizon="month"
           goals={month}
+          onToggle={toggle}
+          onDelete={remove}
+          onAdd={add}
           placeholder="+ add monthly goal"
         />
       </div>
