@@ -1,7 +1,6 @@
 // Shared derived habit stats — the single source both the Habits card
 // and anything else on Home read from.
 
-import { HABITS } from "./config";
 import { localDateISO } from "./dates";
 import type { DailyLog } from "./types";
 
@@ -24,6 +23,7 @@ function shiftISO(iso: string, days: number): string {
 export function consistencyRate(
   logs: DailyLog[],
   days: number,
+  habitCount: number,
   endDate: string = localDateISO(),
 ): number {
   const byDate = new Map(logs.map((l) => [l.log_date, l.notes?.habits?.length ?? 0]));
@@ -31,11 +31,12 @@ export function consistencyRate(
   for (let i = 0; i < days; i++) {
     done += byDate.get(shiftISO(endDate, -i)) ?? 0;
   }
-  return done / (days * HABITS.length);
+  return done / (days * habitCount);
 }
 
 export function habitStats(
   logs: DailyLog[],
+  habitCount: number,
   today: string = localDateISO(),
 ): HabitStats {
   const byDate = new Map(logs.map((l) => [l.log_date, l.notes?.habits?.length ?? 0]));
@@ -45,8 +46,8 @@ export function habitStats(
   }
   const sum = (arr: number[]) => arr.reduce((a, b) => a + b, 0);
   return {
-    rate7: sum(series30.slice(-7)) / (7 * HABITS.length),
-    rate30: sum(series30) / (30 * HABITS.length),
+    rate7: sum(series30.slice(-7)) / (7 * habitCount),
+    rate30: sum(series30) / (30 * habitCount),
     series30,
   };
 }

@@ -4,6 +4,7 @@ import { USER_ID } from "@/lib/config";
 import { audit } from "@/lib/audit";
 import { listRecentLogs } from "@/lib/db";
 import { consistencyRate } from "@/lib/habits";
+import { getSettings } from "@/lib/settings";
 
 type Params = { params: Promise<{ id: string }> };
 
@@ -19,8 +20,10 @@ export async function PATCH(request: NextRequest, { params }: Params) {
     // data collection for future monthly analysis: snapshot the
     // rolling 7-day habit consistency alongside the completion
     if (body.done) {
-      const logs = await listRecentLogs(10);
-      patch.completion_consistency = Number(consistencyRate(logs, 7).toFixed(3));
+      const [logs, settings] = await Promise.all([listRecentLogs(10), getSettings()]);
+      patch.completion_consistency = Number(
+        consistencyRate(logs, 7, settings.habits.length).toFixed(3),
+      );
     } else {
       patch.completion_consistency = null;
     }

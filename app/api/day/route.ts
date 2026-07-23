@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/server";
-import { USER_ID, HABITS } from "@/lib/config";
+import { USER_ID } from "@/lib/config";
+import { getSettings } from "@/lib/settings";
 import { localDateISO } from "@/lib/dates";
 import { audit } from "@/lib/audit";
 import type { DayNotes } from "@/lib/types";
@@ -37,8 +38,9 @@ export async function PUT(request: NextRequest) {
   if (typeof body.journal === "string") notes.journal = body.journal;
   if (typeof body.today_will === "string") notes.today_will = body.today_will;
   if (Array.isArray(body.habits)) {
+    const { habits: allowed } = await getSettings();
     notes.habits = body.habits.filter((h: unknown): h is string =>
-      typeof h === "string" && HABITS.includes(h),
+      typeof h === "string" && allowed.includes(h),
     );
   }
   const mood = MOODS.includes(body.mood) ? body.mood : (existing?.mood ?? null);
